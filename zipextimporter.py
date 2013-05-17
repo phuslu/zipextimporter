@@ -103,10 +103,10 @@ class ZipExtensionImporter(zipimport.zipimporter):
                 if memimporter.get_verbose_flag():
                     sys.stderr.write("# found %s in zipfile %s\n" % (path, self.archive))
                 code = self.get_data(path)
-                memimporter.import_module(code, initname, fullname, path)
-                mod = sys.modules[fullname]
+                mod = memimporter.import_module(code, initname, fullname, path)
                 mod.__file__ = "%s\\%s" % (self.archive, path)
                 mod.__loader__ = self
+                sys.modules[fullname] = mod
                 if memimporter.get_verbose_flag():
                     sys.stderr.write("import %s # loaded from zipfile %s\n" % (fullname, mod.__file__))
                 return mod
