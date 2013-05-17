@@ -71,6 +71,7 @@ class ZipExtensionImporter(zipimport.zipimporter):
         # A callback function formemimporter.import_module.  Tries to
         # locate additional dlls.  Returns the image as Python string,
         # or None if not found.
+        name = name.lower()
         if name in self._files:
             return self.get_data(name)
         return None
@@ -103,6 +104,7 @@ class ZipExtensionImporter(zipimport.zipimporter):
                 if memimporter.get_verbose_flag():
                     sys.stderr.write("# found %s in zipfile %s\n" % (path, self.archive))
                 code = self.get_data(path)
+                path = path.replace('\\', '/')
                 #sys.stderr.write('code=%r, initname=%r, fullname=%r, path=%r\n' % (code[:100], initname, fullname, path))
                 mod = memimporter.import_module(code, initname, fullname, path)
                 mod.__file__ = "%s\\%s" % (self.archive, path)
