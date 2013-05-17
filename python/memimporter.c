@@ -141,9 +141,9 @@ static struct PyModuleDef moduledef = {
     NULL,                /* m_free */
 };
 
-void
+PyObject *
 PyInit_memimporter(void)
 {
 	findproc = FindLibrary;
-	PyModule_Create2(&moduledef, PYTHON_API_VERSION);
+	return PyModule_Create2(&moduledef, PYTHON_API_VERSION);
 }
