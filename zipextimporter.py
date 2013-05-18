@@ -71,9 +71,9 @@ class ZipExtensionImporter(zipimport.zipimporter):
         # A callback function formemimporter.import_module.  Tries to
         # locate additional dlls.  Returns the image as Python string,
         # or None if not found.
-        name = name.lower()
-        if name in self._files:
-            return self.get_data(name)
+        for key in self._files:
+            if name.lower() == key.lower():
+                return self.get_data(key)
         return None
 
     def load_module(self, fullname):
