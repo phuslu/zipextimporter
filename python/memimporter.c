@@ -129,6 +129,7 @@ static PyMethodDef methods[] = {
 	{ NULL, NULL },		/* Sentinel */
 };
 
+#if PY_MAJOR_VERSION >= 3
 static struct PyModuleDef moduledef = {
     PyModuleDef_HEAD_INIT,
     "memimporter",     /* m_name */
@@ -147,3 +148,11 @@ PyInit_memimporter(void)
 	findproc = FindLibrary;
 	return PyModule_Create2(&moduledef, PYTHON_API_VERSION);
 }
+#else
+void
+initmemimporter(void)
+{
+	findproc = FindLibrary;
+	Py_InitModule4("memimporter", methods, module_doc, (PyObject *)NULL, PYTHON_API_VERSION);
+}
+#endif

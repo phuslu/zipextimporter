@@ -40,9 +40,11 @@ True
 >>>
 
 """
-import imp, sys
+import sys
+import imp
 import zipimport
 import memimporter
+
 
 class ZipExtensionImporter(zipimport.zipimporter):
     _suffixes = [s[0] for s in imp.get_suffixes() if s[2] == imp.C_EXTENSION]
@@ -88,7 +90,7 @@ class ZipExtensionImporter(zipimport.zipimporter):
         except zipimport.ZipImportError:
             pass
          # name of initfunction
-        if sys.version[0] > '3':
+        if sys.version[0] > "3":
             initname = "init" + fullname.split(".")[-1]
         else:
             initname = "PyInit_" + fullname.split(".")[-1]
@@ -117,6 +119,7 @@ class ZipExtensionImporter(zipimport.zipimporter):
 
     def __repr__(self):
         return "<%s object %r>" % (self.__class__.__name__, self.archive)
+
 
 def install():
     "Install the zipextimporter"
