@@ -35,10 +35,10 @@ else:
     macros = [("PYTHONDLL", '\\"PYTHON%d%d.DLL\\"' % sys.version_info[:2]),
               ("PYTHONCOM", '\\"pythoncom%d%d.dll\\"' % sys.version_info[:2])]
 
-module1 = Extension("memimporter",
+module1 = Extension("_memimporter",
                          ["./python/MemoryModule.c",
-                          "./python/memimporter_module.c"],
-                         depends=["./python/memimporter.c"],
+                          "./python/_memimporter_module.c"],
+                         depends=["./python/_memimporter.c"],
                          define_macros=macros,
                          )
 

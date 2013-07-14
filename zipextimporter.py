@@ -43,7 +43,7 @@ True
 import sys
 import imp
 import zipimport
-import memimporter
+import _memimporter
 
 
 class ZipExtensionImporter(zipimport.zipimporter):
@@ -81,16 +81,16 @@ class ZipExtensionImporter(zipimport.zipimporter):
     def load_module(self, fullname):
         if fullname in sys.modules:
             mod = sys.modules[fullname]
-            if memimporter.get_verbose_flag():
+            if _memimporter.get_verbose_flag():
                 sys.stderr.write("import %s # previously loaded from zipfile %s\n" % (fullname, self.archive))
             return mod
-        memimporter.set_find_proc(self.locate_dll_image)
+        _memimporter.set_find_proc(self.locate_dll_image)
         try:
             return zipimport.zipimporter.load_module(self, fullname)
         except zipimport.ZipImportError:
             pass
          # name of initfunction
-        if sys.version[0] > "3":
+        if sys.version[0] == "3":
             initname = "init" + fullname.split(".")[-1]
         else:
             initname = "PyInit_" + fullname.split(".")[-1]
@@ -103,16 +103,16 @@ class ZipExtensionImporter(zipimport.zipimporter):
         for s in suffixes:
             path = filename + s
             if path in self._files:
-                if memimporter.get_verbose_flag():
+                if _memimporter.get_verbose_flag():
                     sys.stderr.write("# found %s in zipfile %s\n" % (path, self.archive))
                 code = self.get_data(path)
                 path = path.replace('\\', '/')
                 #sys.stderr.write('code=%r, initname=%r, fullname=%r, path=%r\n' % (code[:100], initname, fullname, path))
-                mod = memimporter.import_module(code, initname, fullname, path)
+                mod = _memimporter.import_module(code, initname, fullname, path)
                 mod.__file__ = "%s\\%s" % (self.archive, path)
                 mod.__loader__ = self
                 sys.modules[fullname] = mod
-                if memimporter.get_verbose_flag():
+                if _memimporter.get_verbose_flag():
                     sys.stderr.write("import %s # loaded from zipfile %s\n" % (fullname, mod.__file__))
                 return mod
         raise zipimport.ZipImportError("can't find module %s" % fullname)
@@ -125,7 +125,3 @@ def install():
     "Install the zipextimporter"
     sys.path_hooks.insert(0, ZipExtensionImporter)
     sys.path_importer_cache.clear()
-
-##if __name__ == "__main__":
-##    import doctest
-##    doctest.testmod()

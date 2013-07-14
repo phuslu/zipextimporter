@@ -99,8 +99,10 @@ import_module(PyObject *self, PyObject *args)
 		return NULL;
 	}
 
-    oldcontext = _Py_PackageContext;
+	oldcontext = _Py_PackageContext;
 	_Py_PackageContext = modname;
+
+#if PY_MAJOR_VERSION >= 3
 	m = ((PyObject*(*)(void))do_init)();
 	_Py_PackageContext = oldcontext;
 	if (PyErr_Occurred()) {
@@ -112,6 +114,15 @@ import_module(PyObject *self, PyObject *args)
 	/* Remember pointer to module init function. */
 	PyModule_GetDef(m)->m_base.m_init = (PyObject*(*)(void))do_init;
 	return m;
+#else
+	do_init();
+	_Py_PackageContext = oldcontext;
+	if (PyErr_Occurred())
+		return NULL;
+	/* Retrieve from sys.modules */
+	return PyImport_ImportModule(modname);
+	return PyImport_ImportModule(modname);
+#endif
 }
 
 static PyObject *
@@ -132,7 +143,7 @@ static PyMethodDef methods[] = {
 #if PY_MAJOR_VERSION >= 3
 static struct PyModuleDef moduledef = {
     PyModuleDef_HEAD_INIT,
-    "memimporter",     /* m_name */
+    "_memimporter",     /* m_name */
     module_doc,  /* m_doc */
     -1,                  /* m_size */
     methods,             /* m_methods */
@@ -143,16 +154,16 @@ static struct PyModuleDef moduledef = {
 };
 
 PyObject *
-PyInit_memimporter(void)
+PyInit__memimporter(void)
 {
 	findproc = FindLibrary;
 	return PyModule_Create2(&moduledef, PYTHON_API_VERSION);
 }
 #else
 void
-initmemimporter(void)
+init_memimporter(void)
 {
 	findproc = FindLibrary;
-	Py_InitModule4("memimporter", methods, module_doc, (PyObject *)NULL, PYTHON_API_VERSION);
+	Py_InitModule4("_memimporter", methods, module_doc, (PyObject *)NULL, PYTHON_API_VERSION);
 }
 #endif
