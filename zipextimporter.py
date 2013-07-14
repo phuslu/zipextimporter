@@ -91,9 +91,9 @@ class ZipExtensionImporter(zipimport.zipimporter):
             pass
          # name of initfunction
         if sys.version[0] == "3":
-            initname = "init" + fullname.split(".")[-1]
-        else:
             initname = "PyInit_" + fullname.split(".")[-1]
+        else:
+            initname = "init" + fullname.split(".")[-1]
         filename = fullname.replace(".", "\\")
         if filename in ("pywintypes", "pythoncom"):
             filename = filename + "%d%d" % sys.version_info[:2]
